@@ -1,0 +1,57 @@
+# Node.js dependencies  
+node_modules/  
+
+# Environment variables (Sensitive data)  
+.env.*
+
+# TypeScript build files  
+dist/  
+*.js  
+*.js.map  
+*.d.ts  
+*.d.ts.map  
+
+# Logs  
+logs/  
+*.log  
+npm-debug.log*  
+yarn-debug.log*  
+yarn-error.log*  
+pnpm-debug.log*  
+
+# VSCode settings  
+.vscode/  
+*.code-workspace  
+
+# macOS system files  
+.DS_Store  
+
+# Linux/macOS temporary files  
+*.swp  
+*.swo  
+*.swn  
+*.swm  
+*~  
+
+# Process managers (e.g., PM2) logs and PIDs  
+.pids  
+pm2.log  
+pm2.pid  
+
+# Jest & Testing files  
+coverage/  
+jest.cache/  
+jest.config.js  
+
+# Local IDE files  
+.idea/  
+*.iml  
+
+# Git backup & merge conflict files  
+*.orig  
+*.rej  
+
+# Email-related debug files  
+emails_debug.log  
+imap_debug.log  
+mailparser_debug.log  
