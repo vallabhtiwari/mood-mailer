@@ -2,7 +2,7 @@
 node_modules/  
 
 # Environment variables (Sensitive data)  
-.env.*
+.env*
 
 # TypeScript build files  
 dist/  
@@ -55,3 +55,4 @@ jest.config.js
 emails_debug.log  
 imap_debug.log  
 mailparser_debug.log  
+*.pem
