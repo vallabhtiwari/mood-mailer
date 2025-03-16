@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { PROMPTS, SYSTEM_PROMPT } from "./prompts";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+dotenv.config();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function generateResponse(
   emailText: string,

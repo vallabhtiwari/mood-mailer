@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-
+import { EmailComponents } from "./responseGenerator";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -11,8 +11,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export function sendEmail(to: string, subject: string, text: string) {
-  const mailOptions = { from: process.env.EMAIL_USER, to, subject, text };
+export function sendEmail(to: string, response: EmailComponents) {
+  const body =
+    response.responseBody +
+    "\n\n" +
+    response.responseSignature +
+    "\n\n" +
+    response.responseClosing;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject: response.responseSubject,
+    text: body,
+  };
 
   transporter.sendMail(mailOptions, (err) => {
     if (err) console.error("Email sending failed:", err);

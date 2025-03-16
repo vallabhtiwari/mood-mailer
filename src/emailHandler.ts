@@ -3,23 +3,24 @@ import Imap from "imap";
 import { MailParser, AddressObject, HeaderValue } from "mailparser";
 import { generateResponse } from "./responseGenerator";
 import { sendEmail } from "./sendEmail";
+import { PROMPTS } from "./prompts";
 
 dotenv.config();
 
+// Gets the email address from the header value
 function getEmailAddress(
   headerValue: HeaderValue | undefined,
   index = 0
 ): string {
   if (!headerValue) return "";
   const addressObj = headerValue as AddressObject;
-  console.log(addressObj);
   return addressObj.value?.[index]?.address || "";
 }
 
+// Gets the email addresses from the header value
 function getEmailAddresses(headerValue: HeaderValue | undefined): string[] {
   if (!headerValue) return [];
   const addressObj = headerValue as AddressObject;
-  console.log(addressObj);
   return (
     (addressObj.value
       ?.map((addr) => addr.address)
@@ -27,6 +28,7 @@ function getEmailAddresses(headerValue: HeaderValue | undefined): string[] {
   );
 }
 
+// IMAP connection
 const imap = new Imap({
   user: process.env.EMAIL_USER!,
   password: process.env.EMAIL_PASS!,
@@ -36,6 +38,7 @@ const imap = new Imap({
   tlsOptions: { rejectUnauthorized: false },
 });
 
+// Starts the email listener
 export function startEmailListener() {
   imap.once("ready", () => {
     openInbox((err: any) => {
@@ -63,10 +66,13 @@ export function startEmailListener() {
 
   imap.connect();
 }
+
+// Opens the inbox
 function openInbox(callback: any) {
   imap.openBox("INBOX", false, callback);
 }
 
+// Fetches unread emails
 function fetchUnreadEmails() {
   imap.search(["UNSEEN"], (err, results) => {
     if (err) {
@@ -89,28 +95,15 @@ function fetchUnreadEmails() {
         mailParser.on("headers", (headers) => {
           const from = getEmailAddress(headers.get("from"));
           const to = getEmailAddresses(headers.get("to"));
-          const deliveredTo = getEmailAddress(headers.get("delivered-to"));
           const subject = headers.get("subject")?.toString() || "";
-          const recipientEmail = deliveredTo || to[0] || "";
 
-          console.log("------------------");
-          console.log(`From: ${from}`);
-          console.log(`To: ${to || "Unknown Recipient"}`);
-          console.log(`Subject: ${subject}`);
-          console.log(`Delivered To: ${deliveredTo}`);
-          console.log("------------------");
-
-          const emotionEmail = to[0];
           let tone = "default";
-          if (emotionEmail.includes("flirt@")) tone = "flirty";
-          else if (emotionEmail.includes("friend@")) tone = "friendly";
-          else if (emotionEmail.includes("roast@")) tone = "roasting";
-          console.log("Tone:", tone);
-
+          if (to.length > 0) {
+            const emotionEmail = to[0];
+            tone = emotionEmail.split("@")[0].toUpperCase();
+          }
           mailParser.on("data", async (data) => {
             if (data.type === "text") {
-              console.log("Email text:", data.text);
-
               // Process the email (generate response & send reply)
               if (tone in PROMPTS) {
                 const text = `Subject: ${subject}\n Body: ${data.text}`;
