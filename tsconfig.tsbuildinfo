@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/lib/emailHandler.ts","./src/lib/prompts.ts","./src/lib/responseGenerator.ts","./src/lib/sendEmail.ts","./src/utils/types.ts","./src/utils/utils.ts"],"version":"5.8.2"}
