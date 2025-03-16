@@ -1,4 +1,4 @@
-import { startEmailListener } from "./emailHandler";
+import { startEmailListener } from "./lib/emailHandler";
 import dotenv from "dotenv";
 
 dotenv.config();

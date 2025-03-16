@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import { EmailComponents } from "./responseGenerator";
+import { EmailComponents } from "../utils/types";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({

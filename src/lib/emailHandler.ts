@@ -1,32 +1,13 @@
 import dotenv from "dotenv";
 import Imap from "imap";
-import { MailParser, AddressObject, HeaderValue } from "mailparser";
+import { MailParser } from "mailparser";
+
 import { generateResponse } from "./responseGenerator";
 import { sendEmail } from "./sendEmail";
 import { PROMPTS } from "./prompts";
+import { getEmailAddress, getEmailAddresses } from "../utils/utils";
 
 dotenv.config();
-
-// Gets the email address from the header value
-function getEmailAddress(
-  headerValue: HeaderValue | undefined,
-  index = 0
-): string {
-  if (!headerValue) return "";
-  const addressObj = headerValue as AddressObject;
-  return addressObj.value?.[index]?.address || "";
-}
-
-// Gets the email addresses from the header value
-function getEmailAddresses(headerValue: HeaderValue | undefined): string[] {
-  if (!headerValue) return [];
-  const addressObj = headerValue as AddressObject;
-  return (
-    (addressObj.value
-      ?.map((addr) => addr.address)
-      .filter((addr) => addr !== undefined) as string[]) || []
-  );
-}
 
 // IMAP connection
 const imap = new Imap({
