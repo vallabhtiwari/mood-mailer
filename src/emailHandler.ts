@@ -112,8 +112,20 @@ function fetchUnreadEmails() {
               console.log("Email text:", data.text);
 
               // Process the email (generate response & send reply)
-              // const responseText = await generateResponse(data.text, tone);
-              // sendEmail(headers.get("from")?.toString() || "", `Re: ${headers.get("subject")}`, responseText);
+              if (tone in PROMPTS) {
+                const text = `Subject: ${subject}\n Body: ${data.text}`;
+                let response = await generateResponse(text, tone);
+                if (typeof response === "string") {
+                  response = {
+                    responseSubject: "Problem Occured",
+                    responseBody: response,
+                    responseSignature: "Mood Mailer",
+                    responseClosing: "",
+                  };
+                }
+
+                sendEmail(from, response);
+              }
 
               imap.addFlags(seqno, "\\Seen", (err) => {
                 if (err)
