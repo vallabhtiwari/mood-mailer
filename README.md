@@ -7,7 +7,6 @@ Mood Mailer is an AI-powered email bot that responds to specific emotional promp
 - **Emotion-Based Replies:** Automatically responds to emails with tone-specific messages for:
 
   - Flirt (flirt@vallabhtiwari.com)
-  - Poems (poems@vallabhtiwari.com)
   - Rant (rant@vallabhtiwari.com)
   - Roast (roast@vallabhtiwari.com)
   - Therapy (therapy@vallabhtiwari.com)
