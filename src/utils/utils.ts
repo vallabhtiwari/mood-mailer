@@ -1,5 +1,8 @@
 import { HeaderValue, AddressObject } from "mailparser";
 import { EmailComponents } from "./types";
+import { DestinationEmails, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 // Gets the email address from the header value
 export function getEmailAddress(
@@ -43,4 +46,32 @@ export function extractEmailComponents(emailText: string): EmailComponents {
     .trim();
 
   return { responseSubject, responseBody, responseSignature, responseClosing };
+}
+
+export async function getContext(from: string, to: DestinationEmails) {
+  try {
+    const context = await prisma.context.findUnique({
+      where: { from_to: { from, to } },
+    });
+    return context?.summary;
+  } catch (error) {
+    console.error("Error getting context:", error);
+    return "";
+  }
+}
+
+export async function saveContext(
+  from: string,
+  to: DestinationEmails,
+  summary: string
+) {
+  try {
+    await prisma.context.upsert({
+      where: { from_to: { from, to } },
+      update: { summary },
+      create: { from, to, summary },
+    });
+  } catch (error) {
+    console.error("Error saving context:", error);
+  }
 }
