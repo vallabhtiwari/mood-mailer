@@ -51,3 +51,7 @@ Send emails to any of the mood-specific addresses and experience the magic of AI
 Have feedback, suggestions, or just want to share your experience? Drop a line at [contact@vallabhtiwari.com](mailto:contact@vallabhtiwari.com) - I'd love to hear how Mood Mailer brightened your day!
 
 Happy Mailing! 📧✨
+
+## 📝 Note
+
+The mood-specific email addresses currently forward to a Gmail account, so you'll receive responses from sender.vallabhtiwari@gmail.com. Don't worry - the AI still knows which mood you're going for based on which address you originally wrote to!
