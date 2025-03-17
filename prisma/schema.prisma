@@ -17,12 +17,11 @@ model Context {
   id        String            @id @default(uuid())
   from      String
   to        DestinationEmails
-  subject   String
   summary   String
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
-  @@unique([from, to, subject])
+  @@unique([from, to])
 }
 
 enum DestinationEmails {
