@@ -1,20 +1,31 @@
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { PROMPTS, SYSTEM_PROMPT } from "./prompts";
+import { MOOD_PROMPTS, SUMMARY_PROMPT, SYSTEM_PROMPT } from "./prompts";
 import { EmailComponents } from "../utils/types";
-import { extractEmailComponents } from "../utils/utils";
+import {
+  extractEmailComponents,
+  getContext,
+  saveContext,
+} from "../utils/utils";
+import { DestinationEmails, PrismaClient } from "@prisma/client";
 
 dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
+const prisma = new PrismaClient();
 export async function generateResponse(
   emailText: string,
-  tone: string
+  tone: string,
+  from: string
 ): Promise<EmailComponents | string> {
-  const systemPrompt = `${SYSTEM_PROMPT} ${PROMPTS[tone]}`;
-  const userPrompt = `Email: ${emailText}`;
+  const systemPrompt = `${SYSTEM_PROMPT} ${MOOD_PROMPTS[tone]}`;
+  let userPrompt = `Email: ${emailText}`;
 
   try {
+    const to = tone as DestinationEmails;
+    const context = await getContext(from, to);
+    if (context) {
+      userPrompt = `${userPrompt}\n\nContext from previous emails: ${context}`;
+    }
     const model = genAI.getGenerativeModel({
       model: process.env.GEMINI_MODEL!,
       generationConfig: {
