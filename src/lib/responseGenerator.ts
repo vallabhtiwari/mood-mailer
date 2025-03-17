@@ -65,3 +65,43 @@ export async function generateResponse(
     return "I'm unable to respond right now.";
   }
 }
+
+export async function generateContext(
+  from: string,
+  tone: string,
+  emailText: string,
+  response: EmailComponents
+) {
+  const conversation = `Email from ${from}: ${emailText} \n\nResponse from Mood Mailer: ${response.responseBody}`;
+
+  try {
+    const model = genAI.getGenerativeModel({
+      model: process.env.GEMINI_MODEL!,
+      generationConfig: {
+        temperature: 1.2,
+        topP: 0.9,
+        topK: 40,
+        maxOutputTokens: 1500,
+      },
+    });
+
+    const chat = model.startChat({
+      history: [
+        { role: "user", parts: [{ text: SUMMARY_PROMPT }] },
+        {
+          role: "model",
+          parts: [
+            { text: "I understand my role and will respond accordingly." },
+          ],
+        },
+      ],
+    });
+
+    const result = await chat.sendMessage([{ text: conversation }]);
+    const summary = result.response.text();
+    const to = tone as DestinationEmails;
+    await saveContext(from, to, summary);
+  } catch (error) {
+    console.error("Error generating context:", error);
+  }
+}

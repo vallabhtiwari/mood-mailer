@@ -2,10 +2,12 @@ import dotenv from "dotenv";
 import Imap from "imap";
 import { MailParser } from "mailparser";
 
-import { generateResponse } from "./responseGenerator";
+import { generateContext, generateResponse } from "./responseGenerator";
 import { sendEmail } from "./sendEmail";
-import { PROMPTS } from "./prompts";
+import { MOOD_PROMPTS } from "./prompts";
 import { getEmailAddress, getEmailAddresses } from "../utils/utils";
+import { EmailComponents } from "../utils/types";
+import { DestinationEmails } from "@prisma/client";
 
 dotenv.config();
 
@@ -86,9 +88,11 @@ function fetchUnreadEmails() {
           mailParser.on("data", async (data) => {
             if (data.type === "text") {
               // Process the email (generate response & send reply)
-              if (tone in PROMPTS) {
+              let response: EmailComponents | string = "";
+              let isEmailComponents = false;
+              if (tone in MOOD_PROMPTS) {
                 const text = `Subject: ${subject}\n Body: ${data.text}`;
-                let response = await generateResponse(text, tone);
+                response = await generateResponse(text, tone, from);
                 if (typeof response === "string") {
                   response = {
                     responseSubject: "Problem Occured",
@@ -96,6 +100,8 @@ function fetchUnreadEmails() {
                     responseSignature: "Mood Mailer",
                     responseClosing: "",
                   };
+                } else {
+                  isEmailComponents = true;
                 }
 
                 sendEmail(from, response);
@@ -106,6 +112,14 @@ function fetchUnreadEmails() {
                   console.error(`Failed to mark email ${seqno} as read:`, err);
                 else console.log(`Email ${seqno} marked as read.`);
               });
+              if (isEmailComponents) {
+                await generateContext(
+                  from,
+                  tone,
+                  data.text,
+                  response as EmailComponents
+                );
+              }
             }
           });
         });
